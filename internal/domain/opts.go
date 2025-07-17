@@ -5,4 +5,5 @@ type GetAdsOpts struct {
 	LowerPrice, HigherPrice AdPrice
 	OrderOption int
 	Ascending bool
+	UserLogin string
 }

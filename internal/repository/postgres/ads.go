@@ -48,11 +48,15 @@ func (r *AdRepo) PostAd(ctx context.Context, ad *domain.Ad) (uuid.UUID, error) {
 	return adId, nil
 }
 
-func (r *AdRepo) GetAdsWithOpts(ctx context.Context, opts domain.GetAdsOpts) ([]*domain.Ad, error) {
-	const op = "AdRepo.GetAdsWithOpts"
+func (r *AdRepo) GetAdFeedWithOpts(ctx context.Context, opts domain.GetAdsOpts) ([]domain.FeedPageItem, error) {
+	const op = "AdRepo.GetAdFeedWithOpts"
 
 	query :=
-		`SELECT * FROM ads WHERE price >= $1 AND price <= $2
+		`SELECT *,
+			CASE WHEN author_login = $1 THEN TRUE
+				 ELSE FALSE
+			END
+			FROM ads WHERE price >= $2 AND price <= $3
 			ORDER BY %s %s
 			LIMIT %d OFFSET %d`
 
@@ -77,26 +81,31 @@ func (r *AdRepo) GetAdsWithOpts(ctx context.Context, opts domain.GetAdsOpts) ([]
 
 	query = fmt.Sprintf(query, orderColumn, orderDirection, limit, offset)
 
-	rows, err := r.pool.Query(ctx, query, opts.LowerPrice, opts.HigherPrice)
+	rows, err := r.pool.Query(ctx, query, opts.UserLogin, opts.LowerPrice, opts.HigherPrice)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
 	defer rows.Close()
 
-	ads := make([]*domain.Ad, 0, pageSize)
+	feed := make([]domain.FeedPageItem, 0, pageSize)
 
-	for rows.Next() {
+	for i := 1; rows.Next(); i++ {
 		var ad domain.Ad
+		item := domain.FeedPageItem{
+			ItemNumber: i,
+			Ad: &ad,
+		}
 
 		if err := rows.Scan(
 			&ad.Id, &ad.AuthorLogin, &ad.Title, &ad.Description, &ad.ImageAddress, &ad.Price, &ad.CreationTime,
+			&item.SelfAuthored,
 		); err != nil {
 			return nil, fmt.Errorf("%s: %w", op, err)
 		}
 
-		ads = append(ads, &ad)
+		feed = append(feed, item)
 	}
 
-	return ads, nil
+	return feed, nil
 }
