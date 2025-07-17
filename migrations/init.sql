@@ -17,5 +17,7 @@ CREATE TABLE ads (
     image_address   text,
     price           int CHECK (price > 0),
 
+    creation_time   timestamp DEFAULT CURRENT_TIMESTAMP
+
     FOREIGN KEY (author_login) REFERENCES users (login) ON DELETE SET NULL ON UPDATE CASCADE
 );
