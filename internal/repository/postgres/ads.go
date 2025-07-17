@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"marketplace/config"
 	"marketplace/internal/domain"
 	"marketplace/internal/repository"
 	"marketplace/pkg/database"
@@ -15,11 +16,13 @@ import (
 
 type AdRepo struct {
 	pool *pgxpool.Pool
+	svcCfg config.ServiceConfig
 }
 
-func NewAdRepo(pool *pgxpool.Pool) *AdRepo {
+func NewAdRepo(pool *pgxpool.Pool, svcCfg config.ServiceConfig) *AdRepo {
 	return &AdRepo{
 		pool: pool,
+		svcCfg: svcCfg,
 	}
 }
 
@@ -76,9 +79,7 @@ func (r *AdRepo) GetAdFeedWithOpts(ctx context.Context, opts domain.GetAdsOpts) 
 		orderDirection = "DESC"
 	}
 
-	const pageSize = 5 // need to config
-	limit, offset := pageSize, pageSize * (opts.PageNumber - 1)
-
+	limit, offset := r.svcCfg.PageSize, r.svcCfg.PageSize * (opts.PageNumber - 1)
 	query = fmt.Sprintf(query, orderColumn, orderDirection, limit, offset)
 
 	rows, err := r.pool.Query(ctx, query, opts.UserLogin, opts.LowerPrice, opts.HigherPrice)
@@ -88,7 +89,7 @@ func (r *AdRepo) GetAdFeedWithOpts(ctx context.Context, opts domain.GetAdsOpts) 
 
 	defer rows.Close()
 
-	feed := make([]domain.FeedPageItem, 0, pageSize)
+	feed := make([]domain.FeedPageItem, 0, r.svcCfg.PageSize)
 
 	for i := 1; rows.Next(); i++ {
 		var ad domain.Ad

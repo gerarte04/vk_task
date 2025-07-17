@@ -19,6 +19,7 @@ import (
 type AuthService struct {
 	userRepo repository.UserRepo
 	jwtCfg config.JwtConfig
+	cryptCfg config.CryptConfig
 	publicKey []byte
 	privateKey []byte
 }
@@ -26,6 +27,7 @@ type AuthService struct {
 func NewAuthService(
 	userRepo repository.UserRepo,
 	jwtCfg config.JwtConfig,
+	cryptCfg config.CryptConfig,
 ) (*AuthService, error) {
 	const op = "NewAuthService"
 
@@ -42,6 +44,7 @@ func NewAuthService(
 	return &AuthService{
 		userRepo: userRepo,
 		jwtCfg: jwtCfg,
+		cryptCfg: cryptCfg,
 		privateKey: privateKey,
 		publicKey: publicKey,
 	}, nil
@@ -82,7 +85,7 @@ func (s *AuthService) Login(ctx context.Context, login, password string) (string
 func (s *AuthService) Register(ctx context.Context, user *domain.User, password string) (uuid.UUID, error) {
 	const op = "AuthService.Register"
 
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), 14) // configure
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), s.cryptCfg.HashingCost)
 	if err != nil {
 		return uuid.Nil, fmt.Errorf("%s: %w", op, err)
 	}
