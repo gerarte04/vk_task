@@ -1,12 +1,14 @@
 package http
 
 import (
+	"fmt"
 	"marketplace/config"
 	"marketplace/internal/api/http/response"
 	"marketplace/internal/api/http/types"
 	"marketplace/internal/middleware"
 	"marketplace/internal/usecases"
 	"marketplace/pkg/http/handlers"
+	pkgCrypto "marketplace/pkg/utils/crypto"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -16,24 +18,34 @@ type AdHandler struct {
 	adSvc usecases.AdService
 	pathCfg config.PathConfig
 	svcCfg config.ServiceConfig
+	publicKey []byte
 }
 
 func NewAdHandler(
 	adSvc usecases.AdService,
 	pathCfg config.PathConfig,
 	svcCfg config.ServiceConfig,
-) *AdHandler {
+	publicKeyPEM string,
+) (*AdHandler, error) {
+	const op = "NewAdHandler"
+
+	publicKey, err := pkgCrypto.ParsePublicKeyFromPEM(publicKeyPEM)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
 	return &AdHandler{
 		adSvc: adSvc,
 		pathCfg: pathCfg,
 		svcCfg: svcCfg,
-	}
+		publicKey: publicKey,
+	}, nil
 }
 
 func (h *AdHandler) WithAdHandlers() handlers.RouterOption {
 	return func(r chi.Router) {
 		r.Group(func(r chi.Router) {
-			r.Use(middleware.WithAuthMiddleware())
+			r.Use(middleware.WithAuthMiddleware(h.publicKey, h.svcCfg.DebugMode))
 			r.Post(h.pathCfg.CreateAdPath, h.postCreateAd)
 		})
 
@@ -57,11 +69,13 @@ func (h *AdHandler) postCreateAd(w http.ResponseWriter, r *http.Request) {
 	req, err := types.MakePostCreateAdRequest(r, h.svcCfg)
 	if err != nil {
 		response.ProcessCreatingRequestError(w, err, h.svcCfg.DebugMode)
+		return
 	}
 
 	res, err := h.adSvc.CreateAd(r.Context(), &req.Ad)
 	if err != nil {
 		response.ProcessError(w, err, h.svcCfg.DebugMode)
+		return
 	}
 
 	response.WriteResponse(w, types.PostCreateAdResponse{AdId: res.String()}, http.StatusCreated)
@@ -89,6 +103,7 @@ func (h *AdHandler) getFeed(w http.ResponseWriter, r *http.Request) {
 	res, err := h.adSvc.GetAdFeed(r.Context(), req.Opts)
 	if err != nil {
 		response.ProcessError(w, err, h.svcCfg.DebugMode)
+		return
 	}
 
 	response.WriteResponse(w, types.GetFeedResponse{Feed: res}, http.StatusOK)

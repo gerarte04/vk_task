@@ -20,7 +20,7 @@ type TokenClaims struct {
 	Exp time.Time
 }
 
-func ValidateJwtToken(tokenStr string, publicKey []byte) (uuid.UUID, error) {
+func ValidateJwtToken(tokenStr string, publicKey []byte) (string, error) {
 	const op = "ValidateJwtToken"
 
 	keyFunc := func(token *jwt.Token) (any, error) {
@@ -37,24 +37,19 @@ func ValidateJwtToken(tokenStr string, publicKey []byte) (uuid.UUID, error) {
 	)
 
 	if errors.Is(err, jwt.ErrTokenExpired) {
-		return uuid.Nil, fmt.Errorf("%s: %w", op, ErrTokenExpired)
+		return "", fmt.Errorf("%s: %w", op, ErrTokenExpired)
 	} else if errors.Is(err, jwt.ErrTokenSignatureInvalid) {
-		return uuid.Nil, fmt.Errorf("%s: %w", op, ErrTokenSignatureInvalid)
+		return "", fmt.Errorf("%s: %w", op, ErrTokenSignatureInvalid)
 	} else if err != nil {
-		return uuid.Nil, fmt.Errorf("%s: %w", op, ErrTokenParsingFailed)
+		return "", fmt.Errorf("%s: %w", op, ErrTokenParsingFailed)
 	}
 
 	sub, err := token.Claims.GetSubject()
 	if err != nil {
-		return uuid.Nil, fmt.Errorf("%s: %w", op, err)
+		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
-	usrId, err := uuid.Parse(sub)
-	if err != nil {
-		return uuid.Nil, fmt.Errorf("%s: %w", op, err)
-	}
-
-	return usrId, nil
+	return sub, nil
 }
 
 func GenerateJwtToken(cm TokenClaims, privateKey []byte) (string, error) {

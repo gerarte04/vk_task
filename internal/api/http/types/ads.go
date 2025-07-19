@@ -62,6 +62,8 @@ func MakePostCreateAdRequest(r *http.Request, cfg config.ServiceConfig) (*Create
 		return nil, fmt.Errorf("%s: %w", op, ErrBadImageFormat)
 	}
 
+	req.Ad.AuthorLogin = r.Header.Get("X-User-Login")
+
 	return &req, nil
 }
 
@@ -79,7 +81,7 @@ func CreateGetFeedRequest(r *http.Request, cfg config.ServiceConfig) *GetFeedReq
 			HigherPrice: domain.AdPrice(cfg.MaxPrice),
 			OrderOption: domain.OrderByCreationTime,
 			Ascending: false,
-			UserLogin: r.URL.Query().Get("user_login"),
+			UserLogin: r.Header.Get("X-User-Login"),
 		},
 	}
 

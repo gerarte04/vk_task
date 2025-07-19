@@ -71,7 +71,7 @@ func (s *AuthService) Login(ctx context.Context, login, password string) (string
 
 	token, err := pkgCrypto.GenerateJwtToken(pkgCrypto.TokenClaims{
 		Iss: s.jwtCfg.Issuer,
-		Sub: user.Id.String(),
+		Sub: user.Login,
 		Exp: time.Now().Add(s.jwtCfg.ExpirationTime),
 	}, s.privateKey)
 

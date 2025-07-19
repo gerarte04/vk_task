@@ -53,11 +53,13 @@ func (h *AuthHandler) postRegister(w http.ResponseWriter, r *http.Request) {
 	req, err := types.CreatePostRegisterRequest(r, h.svcCfg)
 	if err != nil {
 		response.ProcessCreatingRequestError(w, err, h.svcCfg.DebugMode)
+		return
 	}
 
 	res, err := h.authSvc.Register(r.Context(), &domain.User{Login: req.Login}, req.Password)
 	if err != nil {
 		response.ProcessError(w, err, h.svcCfg.DebugMode)
+		return
 	}
 
 	response.WriteResponse(w, types.PostRegisterResponse{UserId: res.String()}, http.StatusCreated)
@@ -78,11 +80,13 @@ func (h *AuthHandler) postLogin(w http.ResponseWriter, r *http.Request) {
 	req, err := types.CreatePostLoginRequest(r)
 	if err != nil {
 		response.ProcessCreatingRequestError(w, err, h.svcCfg.DebugMode)
+		return
 	}
 
 	res, err := h.authSvc.Login(r.Context(), req.Login, req.Password)
 	if err != nil {
 		response.ProcessError(w, err, h.svcCfg.DebugMode)
+		return
 	}
 
 	response.WriteResponse(w, types.PostLoginResponse{Token: res}, http.StatusOK)
