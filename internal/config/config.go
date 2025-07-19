@@ -2,6 +2,7 @@ package config
 
 import (
 	pkgConfig "marketplace/pkg/config"
+	"marketplace/pkg/database/postgres"
 	"time"
 )
 
@@ -41,9 +42,10 @@ type PathConfig struct {
 }
 
 type Config struct {
-	HttpCfg	pkgConfig.HttpConfig 	`yaml:"http"`
-	JwtCfg JwtConfig 				`yaml:"jwt"`
-	CryptCfg CryptConfig 			`yaml:"crypt"`
-	SvcCfg ServiceConfig 			`yaml:"service"`
-	PathCfg PathConfig				`yaml:"paths"`
+	HttpCfg	pkgConfig.HttpConfig 		`yaml:"http"`
+	PostgresCfg postgres.PostgresConfig	`yaml:"postgres"`
+	JwtCfg JwtConfig 					`yaml:"jwt"`
+	CryptCfg CryptConfig 				`yaml:"crypt"`
+	SvcCfg ServiceConfig 				`yaml:"service"`
+	PathCfg PathConfig					`yaml:"paths"`
 }

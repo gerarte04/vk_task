@@ -2,9 +2,9 @@ package http
 
 import (
 	"fmt"
-	"marketplace/config"
 	"marketplace/internal/api/http/response"
 	"marketplace/internal/api/http/types"
+	"marketplace/internal/config"
 	"marketplace/internal/middleware"
 	"marketplace/internal/usecases"
 	"marketplace/pkg/http/handlers"

@@ -7,7 +7,7 @@ import (
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
-	"marketplace/config"
+	"marketplace/internal/config"
 	"marketplace/internal/domain"
 	"marketplace/pkg/utils"
 	"net/http"

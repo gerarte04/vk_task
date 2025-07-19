@@ -3,7 +3,7 @@ package types
 import (
 	"encoding/json"
 	"fmt"
-	"marketplace/config"
+	"marketplace/internal/config"
 	"net/http"
 	"strings"
 	"unicode"

@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"marketplace/config"
+	"marketplace/internal/config"
 	"marketplace/internal/domain"
 	"marketplace/internal/repository"
 	"marketplace/internal/usecases"
