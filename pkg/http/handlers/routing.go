@@ -14,10 +14,12 @@ const (
 
 type RouterOption func(r chi.Router)
 
-func RouteHandlers(r chi.Router, opts ...RouterOption) {
-	for _, opt := range opts {
-		opt(r)
-	}
+func RouteHandlers(r chi.Router, apiPath string, opts ...RouterOption) {
+	r.Route(apiPath, func(r chi.Router) {
+		for _, opt := range opts {
+			opt(r)
+		}
+	})
 }
 
 func WithLogger() RouterOption {

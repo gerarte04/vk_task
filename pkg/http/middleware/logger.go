@@ -13,11 +13,11 @@ func Logger(next http.Handler) http.Handler {
 		ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
 		start := time.Now()
 
-		next.ServeHTTP(w, r)
+		next.ServeHTTP(ww, r)
 
 		log.Printf(
-			"[HTTP/1.1] %s | %s | %s | %d | %s",
-			r.Method, r.URL.Path, r.RemoteAddr, ww.Status(), time.Since(start).String(), 
+			"[HTTP/1.1] | %s | %d | %s | %s | %s",
+			r.RemoteAddr, ww.Status(), r.Method, r.URL.Path, time.Since(start).String(),
 		)
 	})
 }

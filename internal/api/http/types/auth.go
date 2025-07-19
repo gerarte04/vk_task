@@ -24,9 +24,11 @@ func checkLogin(login string, cfg config.ServiceConfig) bool {
 }
 
 func checkPassword(password string, cfg config.ServiceConfig) bool {
-	return strings.ContainsAny(password, "!@#$%^&*?/") && 
-		len(password) >= cfg.MinPasswordLength &&
-		len(password) <= cfg.MaxPasswordLength
+	if len(cfg.SpecialSymbols) != 0 && !strings.ContainsAny(password, cfg.SpecialSymbols) {
+		return false
+	}
+
+	return len(password) >= cfg.MinPasswordLength && len(password) <= cfg.MaxPasswordLength
 }
 
 // Requests ----------------------------------------------------------------------
@@ -72,10 +74,6 @@ func CreatePostLoginRequest(r *http.Request) (*PostLoginRequest, error) {
 }
 
 // Responses ---------------------------------------------------------------------
-
-type PostRegisterResponse struct {
-	UserId 	string	`json:"user_id"`
-}
 
 type PostLoginResponse struct {
 	Token	string	`json:"token"`

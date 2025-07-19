@@ -29,12 +29,13 @@ type ServiceConfig struct {
 	MaxLoginLength			int					`yaml:"max_login_length" env-default:"30"`
 	MinPasswordLength		int					`yaml:"min_password_length" env-default:"8"`
 	MaxPasswordLength		int					`yaml:"max_password_length" env-default:"30"`
-	SpecialSymbolInPassword	bool				`yaml:"special_symbol_in_password" env-default:"true"`
+	SpecialSymbols			string				`yaml:"special_symbols" env-default:"!@#$%^&*?/"`
 
 	DebugMode				bool				`yaml:"debug_mode" env-default:"true"`
 }
 
 type PathConfig struct {
+	ApiPath					string				`yaml:"api" env-required:"true"`
 	RegisterPath			string				`yaml:"register" env-required:"true"`
 	LoginPath				string				`yaml:"login" env-required:"true"`
 	CreateAdPath			string				`yaml:"create_ad" env-required:"true"`

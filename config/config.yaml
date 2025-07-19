@@ -1,0 +1,39 @@
+http:
+  host: 0.0.0.0
+  port: 8080
+
+postgres:
+  host: postgres
+  port: 5432
+  db: marketplace_db
+  user: admin
+  password: adminpass
+
+jwt:
+  issuer: marketplace.AuthService
+  expiration_time: 30m
+
+crypt:
+  hashing_cost: 14
+
+service:
+  page_size: 5
+  max_price: 10000000
+  max_title_length: 100
+  max_description_length: 2000
+  max_image_size: 1024
+
+  min_login_length: 3
+  max_login_length: 30
+  min_password_length: 8
+  max_password_length: 30
+  special_symbols: "!@#$%^&*?/"
+
+  debug_mode: true
+
+paths:
+  api: /api/v1
+  register: /auth/register
+  login: /auth/login
+  create_ad: /ads/create
+  get_feed: /ads/feed

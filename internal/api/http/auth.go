@@ -38,17 +38,19 @@ func (h *AuthHandler) WithAuthHandlers() handlers.RouterOption {
 }
 
 // @Summary 	Register new user
-// @Description REGISTER NEW USER
+// @Description По умолчанию редусмотрены следующие ограничения на логин и пароль:
+// @Description - логин может состоять только из букв, цифр и символа '_', его длина должна быть в интервале от 3 до 30;
+// @Description - пароль должен содержать хотя бы символ из набора '!@#$%^&*?/', его длина должна быть в интервале от 8 до 30.
 // @Tags 		auth
 // @Accept  	json
 // @Produce 	json
 // @Param 		credentials body 	types.PostRegisterRequest true "Login and password"
-// @Success 	201 {object} 		types.PostRegisterResponse "Successfully registered"
+// @Success 	201 {object} 		domain.User "Successfully registered"
 // @Failure 	400 {string} 		string "Bad request"
 // @Failure 	401 {string} 		string "Unauthorized"
 // @Failure 	404 {string} 		string "Object not found"
 // @Failure 	500 {string} 		string "Internal error"
-// @Router		/v1/auth/register 	[post]
+// @Router		/auth/register 	[post]
 func (h *AuthHandler) postRegister(w http.ResponseWriter, r *http.Request) {
 	req, err := types.CreatePostRegisterRequest(r, h.svcCfg)
 	if err != nil {
@@ -62,7 +64,7 @@ func (h *AuthHandler) postRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response.WriteResponse(w, types.PostRegisterResponse{UserId: res.String()}, http.StatusCreated)
+	response.WriteResponse(w, res, http.StatusCreated)
 }
 
 // @Summary 	Login and get access token
@@ -75,7 +77,7 @@ func (h *AuthHandler) postRegister(w http.ResponseWriter, r *http.Request) {
 // @Failure 	401 {string} 		string "Unauthorized"
 // @Failure 	404 {string} 		string "Object not found"
 // @Failure 	500 {string} 		string "Internal error"
-// @Router		/v1/auth/login 		[post]
+// @Router		/auth/login 		[post]
 func (h *AuthHandler) postLogin(w http.ResponseWriter, r *http.Request) {
 	req, err := types.CreatePostLoginRequest(r)
 	if err != nil {

@@ -12,7 +12,6 @@ import (
 
 	pkgCrypto "marketplace/pkg/utils/crypto"
 
-	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -82,20 +81,22 @@ func (s *AuthService) Login(ctx context.Context, login, password string) (string
 	return token, nil
 }
 
-func (s *AuthService) Register(ctx context.Context, user *domain.User, password string) (uuid.UUID, error) {
+func (s *AuthService) Register(ctx context.Context, user *domain.User, password string) (*domain.User, error) {
 	const op = "AuthService.Register"
 
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), s.cryptCfg.HashingCost)
 	if err != nil {
-		return uuid.Nil, fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
 	user.PasswordHash = passwordHash
 
 	userId, err := s.userRepo.PostUser(ctx, user)
 	if err != nil {
-		return uuid.Nil, fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	return userId, nil
+	user.Id = userId
+
+	return user, nil
 }

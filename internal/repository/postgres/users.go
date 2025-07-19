@@ -27,7 +27,7 @@ func NewUserRepo(pool *pgxpool.Pool) *UserRepo {
 func (r *UserRepo) PostUser(ctx context.Context, user *domain.User) (uuid.UUID, error) {
 	const op = "UserRepo.PostUser"
 
-	query := "INSERT INTO users (login, password) VALUES ($1, $2) RETURNING id"
+	query := "INSERT INTO users (login, password_hash) VALUES ($1, $2) RETURNING id"
 
 	var userId uuid.UUID
 	err := r.pool.QueryRow(

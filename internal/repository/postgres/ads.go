@@ -94,7 +94,7 @@ func (r *AdRepo) GetAdFeedWithOpts(ctx context.Context, opts domain.GetAdsOpts) 
 	for i := 1; rows.Next(); i++ {
 		var ad domain.Ad
 		item := domain.FeedPageItem{
-			ItemNumber: i,
+			ItemNumber: offset + i,
 			Ad: &ad,
 		}
 

@@ -1,8 +1,9 @@
-package cmd
+package main
 
 import (
 	"fmt"
 	"log"
+	_ "marketplace/docs"
 	apiHttp "marketplace/internal/api/http"
 	"marketplace/internal/config"
 	repo "marketplace/internal/repository/postgres"
@@ -15,10 +16,15 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+// @title Marketplace API
+// @version 1.0
+
+// @host localhost:8080
+// @BasePath /api/v1
 func main() {
 	appFlags := pkgConfig.ParseFlags()
     var cfg config.Config
-    pkgConfig.MustLoadConfig(appFlags.ConfigPath, cfg)
+    pkgConfig.MustLoadConfig(appFlags.ConfigPath, &cfg)
 
 	log.Printf("Marketplace server is starting")
 
@@ -48,7 +54,7 @@ func main() {
 	log.Printf("All services were created successfully")
 
 	r := chi.NewRouter()
-	handlers.RouteHandlers(r,
+	handlers.RouteHandlers(r, cfg.PathCfg.ApiPath,
 		handlers.WithLogger(),
 		handlers.WithRecovery(),
 		handlers.WithSwagger(),

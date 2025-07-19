@@ -19,11 +19,11 @@ func checkPrice(price int, cfg config.ServiceConfig) bool {
 }
 
 func checkTitle(title string, cfg config.ServiceConfig) bool {
-	return len(title) < cfg.MaxTitleLength
+	return len(title) > 0 && len(title) <= cfg.MaxTitleLength
 }
 
 func checkDescription(desc string, cfg config.ServiceConfig) bool {
-	return len(desc) < cfg.MaxDescriptionLength
+	return len(desc) <= cfg.MaxDescriptionLength
 }
 
 func checkImage(image image.Image, cfg config.ServiceConfig) bool {
@@ -71,9 +71,10 @@ type GetFeedRequest struct {
 	Opts	domain.GetAdsOpts
 }
 
-func CreateGetFeedRequest(r *http.Request, cfg config.ServiceConfig) *GetFeedRequest {
+func CreateGetFeedRequest(r *http.Request, cfg config.ServiceConfig, publicKey []byte) *GetFeedRequest {
 	const op = "CreateGetFeedRequest"
 
+	
 	req := GetFeedRequest{
 		Opts: domain.GetAdsOpts{
 			PageNumber: 1,
@@ -81,8 +82,12 @@ func CreateGetFeedRequest(r *http.Request, cfg config.ServiceConfig) *GetFeedReq
 			HigherPrice: domain.AdPrice(cfg.MaxPrice),
 			OrderOption: domain.OrderByCreationTime,
 			Ascending: false,
-			UserLogin: r.Header.Get("X-User-Login"),
+			UserLogin: "",
 		},
+	}
+
+	if login, err := utils.ProcessAuthHeader(r, publicKey); err == nil {
+		req.Opts.UserLogin = login
 	}
 
 	if number, err := strconv.Atoi(r.URL.Query().Get("page_number")); err == nil {

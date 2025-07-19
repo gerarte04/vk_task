@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"marketplace/internal/domain"
 	"marketplace/internal/repository"
-
-	"github.com/google/uuid"
+	"time"
 )
 
 type AdService struct {
@@ -19,15 +18,18 @@ func NewAdService(adRepo repository.AdRepo) *AdService {
 	}
 }
 
-func (s *AdService) CreateAd(ctx context.Context, ad *domain.Ad) (uuid.UUID, error) {
+func (s *AdService) CreateAd(ctx context.Context, ad *domain.Ad) (*domain.Ad, error) {
 	const op = "AdService.CreateAd"
 
 	id, err := s.adRepo.PostAd(ctx, ad)
 	if err != nil {
-		return uuid.Nil, fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	return id, nil
+	ad.Id = id
+	ad.CreationTime = time.Now()
+
+	return ad, nil
 }
 
 func (s *AdService) GetAdFeed(ctx context.Context, opts domain.GetAdsOpts) ([]domain.FeedPageItem, error) {
