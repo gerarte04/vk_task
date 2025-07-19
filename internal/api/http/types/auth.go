@@ -29,6 +29,8 @@ func checkPassword(password string, cfg config.ServiceConfig) bool {
 		len(password) <= cfg.MaxPasswordLength
 }
 
+// Requests ----------------------------------------------------------------------
+
 type PostRegisterRequest struct {
 	Login 		string		`json:"login"`
 	Password	string		`json:"password"`
@@ -67,4 +69,14 @@ func CreatePostLoginRequest(r *http.Request) (*PostLoginRequest, error) {
 	}
 
 	return &req, nil
+}
+
+// Responses ---------------------------------------------------------------------
+
+type PostRegisterResponse struct {
+	UserId 	string	`json:"user_id"`
+}
+
+type PostLoginResponse struct {
+	Token	string	`json:"token"`
 }

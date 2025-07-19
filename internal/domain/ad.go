@@ -10,7 +10,7 @@ type AdPrice int
 
 type Ad struct {
 	Id 				uuid.UUID	`swaggerignore:"true"`
-	AuthorLogin 	string		`json:"author_login"`
+	AuthorLogin 	string		`swaggerignore:"true"`
 
 	Title 			string		`json:"title"`
 	Description 	string		`json:"description"`

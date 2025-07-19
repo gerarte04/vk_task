@@ -30,6 +30,8 @@ func checkImage(image image.Image, cfg config.ServiceConfig) bool {
 	return image.Bounds().Dx() <= cfg.MaxImageSize && image.Bounds().Dy() <= cfg.MaxImageSize
 }
 
+// Requests ----------------------------------------------------------------------
+
 type CreateAdRequest struct {
 	Ad 	domain.Ad	`json:"ad"` 
 }
@@ -39,7 +41,7 @@ func MakePostCreateAdRequest(r *http.Request, cfg config.ServiceConfig) (*Create
 
 	var req CreateAdRequest
 
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&req.Ad); err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
@@ -105,4 +107,14 @@ func CreateGetFeedRequest(r *http.Request, cfg config.ServiceConfig) *GetFeedReq
 	}
 
 	return &req
+}
+
+// Responses ---------------------------------------------------------------------
+
+type PostCreateAdResponse struct {
+	AdId 	string					`json:"ad_id"`
+}
+
+type GetFeedResponse struct {
+	Feed 	[]domain.FeedPageItem	`json:"feed"`
 }

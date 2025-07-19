@@ -41,6 +41,18 @@ func (h *AdHandler) WithAdHandlers() handlers.RouterOption {
 	}
 }
 
+// @Summary 	Create new ad
+// @Tags 		ads
+// @Accept  	json
+// @Produce 	json
+// @Param		Authorization 	header	string true "Acess token with Bearer prefix"
+// @Param 		ad 	body 				domain.Ad true "Ad details"
+// @Success 	201 {object} 			types.PostCreateAdResponse "Successfully created"
+// @Failure 	400 {string} 			string "Bad request"
+// @Failure 	401 {string} 			string "Unauthorized"
+// @Failure 	404 {string} 			string "Object not found"
+// @Failure 	500 {string} 			string "Internal error"
+// @Router		/v1/ads/create 	[post]
 func (h *AdHandler) postCreateAd(w http.ResponseWriter, r *http.Request) {
 	req, err := types.MakePostCreateAdRequest(r, h.svcCfg)
 	if err != nil {
@@ -52,9 +64,25 @@ func (h *AdHandler) postCreateAd(w http.ResponseWriter, r *http.Request) {
 		response.ProcessError(w, err, h.svcCfg.DebugMode)
 	}
 
-	response.WriteResponse(w, map[string]string{"ad_id": res.String()}, http.StatusCreated)
+	response.WriteResponse(w, types.PostCreateAdResponse{AdId: res.String()}, http.StatusCreated)
 }
 
+// @Summary 	Get feed with options
+// @Tags 		ads
+// @Accept  	json
+// @Produce 	json
+// @Param		Authorization	header	string false "Access token with Bearer prefix (optional)"
+// @Param 		page_number 	query 	int false "Page number"
+// @Param		lower_price		query	int false "Lower price limit"
+// @Param		higher_price	query	int false "Higher price limit"
+// @Param 		order_by		query	string false "Order option (\"creation_time\" or \"price\")"
+// @Param		ascending		query	bool false "Ascending or descending order"
+// @Success 	200 {object} 			types.GetFeedResponse "Successfully got feed"
+// @Failure 	400 {string} 			string "Bad request"
+// @Failure 	401 {string} 			string "Unauthorized"
+// @Failure 	404 {string} 			string "Object not found"
+// @Failure 	500 {string} 			string "Internal error"
+// @Router		/v1/ads/feed	[get]
 func (h *AdHandler) getFeed(w http.ResponseWriter, r *http.Request) {
 	req := types.CreateGetFeedRequest(r, h.svcCfg)
 
@@ -63,5 +91,5 @@ func (h *AdHandler) getFeed(w http.ResponseWriter, r *http.Request) {
 		response.ProcessError(w, err, h.svcCfg.DebugMode)
 	}
 
-	response.WriteResponse(w, res, http.StatusOK)
+	response.WriteResponse(w, types.GetFeedResponse{Feed: res}, http.StatusOK)
 }
