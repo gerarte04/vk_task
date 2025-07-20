@@ -1,7 +1,10 @@
-.PHONY: build_service launch_service
+.PHONY: build_services launch_services stop_services
 
-build_service:
-	docker build -f Dockerfile -t marketplace:v1.0.0 .
+build_services:
+	docker compose build
 
-launch_service:
-	docker run -p 8080:8080 --env-file .env marketplace:v1.0.0
+launch_services:
+	docker compose up --force-recreate --abort-on-container-exit
+
+stop_services:
+	docker compose down -v

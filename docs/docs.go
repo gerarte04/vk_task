@@ -83,9 +83,6 @@ const docTemplate = `{
         "/ads/feed": {
             "get": {
                 "description": "Для успешной аутентификации должен быть установлен хедер 'Authorization: Bearer %token%` + "`" + ` (опционально).\nРазмер страницы по умолчанию 5. Поле item_number обозначает порядковый номер объявления среди всех объявлений, подходящих под фильтры.",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],

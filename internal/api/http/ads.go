@@ -91,7 +91,6 @@ func (h *AdHandler) postCreateAd(w http.ResponseWriter, r *http.Request) {
 // @Description Для успешной аутентификации должен быть установлен хедер 'Authorization: Bearer %token%` (опционально).
 // @Description Размер страницы по умолчанию 5. Поле item_number обозначает порядковый номер объявления среди всех объявлений, подходящих под фильтры.
 // @Tags 		ads
-// @Accept  	json
 // @Produce 	json
 // @Param		Authorization	header	string false "Access token with Bearer prefix (optional)"
 // @Param 		page_number 	query 	int false "Page number"
